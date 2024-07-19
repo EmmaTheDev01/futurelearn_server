@@ -43,6 +43,16 @@ const userSchema = new mongoose.Schema(
       required: true,
       match: [/^\d{10}$/, 'Phone number must be exactly 10 digits'],
     },
+    photo: {
+      public_id: {
+        type: String,
+        required: false,
+      },
+      url: {
+        type: String,
+        required: false,
+      },
+    },
     role: {
       type: String,
       enum: ['student', 'lecturer', 'admin'],
