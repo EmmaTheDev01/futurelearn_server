@@ -1,14 +1,26 @@
 import express from 'express';
-import { deleteUser, findAllUsers, findUser, updateUser, updateUserBalance,getDailyUserCount } from '../controllers/userController.js';
-import { verifyAdmin, verifyUser } from '../utils/verifyToken.js';
+import {
+  updateUser,
+  deleteUser,
+  findUser,
+  findAllUsers,
+  findAllStudents,
+  findAllLecturers,
+  updateUserRole,
+} from '../controllers/userController.js';
+import { verifyAdmin } from '../utils/verifyToken.js';
 
 const router = express.Router();
 
-router.put("/:id", verifyUser, updateUser);
-router.delete("/:id", verifyAdmin, deleteUser);
-router.get("/:id", verifyUser, findUser);
-router.get("/", verifyAdmin, findAllUsers);
-router.put("/updatebalance/:id", verifyAdmin, updateUserBalance);
-router.get("/daily-user-count", verifyAdmin, getDailyUserCount);
+// Protected routes
+router.put('/:id', updateUser);
+router.delete('/:id', deleteUser);
+router.get('/:id', findUser);
+
+// Admin routes
+router.get('/', verifyAdmin, findAllUsers);
+router.get('/students', verifyAdmin, findAllStudents);
+router.get('/lecturers', verifyAdmin, findAllLecturers);
+router.put('/:id/updateRole', verifyAdmin, updateUserRole);
 
 export default router;

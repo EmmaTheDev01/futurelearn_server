@@ -1,6 +1,6 @@
-import Assignment from '../models/Assignment';
-import Group from '../models/Group';
-import User from '../models/User';
+import Assignment from '../models/Assignment.js';
+import Group from '../models/Group.js';
+import User from '../models/User.js';
 
 // Function to create a new assignment
 export const createAssignment = async (req, res) => {

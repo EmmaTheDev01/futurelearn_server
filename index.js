@@ -3,15 +3,14 @@ import dotenv from "dotenv";
 import mongoose from "mongoose";
 import cors from "cors";
 import cookieParser from "cookie-parser";
+import bodyParser from "body-parser";
 import cloudinary from "cloudinary";
 import authRoute from "./routes/auth.js";
-import AdvertRoute from "./routes/advert.js";
-import userRoute from "./routes/users.js";
-import PaymentRequestRoute from "./routes/PaymentRequest.js";
-import ContactRoute from "./routes/Contact.js";
+import assignmentRoute from "./routes/assignmentRoutes.js"; // Import assignment routes
+import groupRoute from "./routes/groupRoutes.js"; // Import group routes
+import postRoute from "./routes/post.js"; // Import post routes
+import userRoute from "./routes/users.js"; // Import user routes
 import { errorHandler } from "./errorHandler.js";
-import bodyParser from "body-parser";
-
 
 // Load environment variables
 dotenv.config();
@@ -58,10 +57,10 @@ app.use(errorHandler);
 
 // Routes
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/adverts", AdvertRoute);
-app.use("/api/v1/user", userRoute);
-app.use("/api/v1/payment", PaymentRequestRoute);
-app.use("/api/v1/contact", ContactRoute);
+app.use("/api/v1/assignment", assignmentRoute); // Assign assignment routes to /api/v1/assignment
+app.use("/api/v1/group", groupRoute); // Assign group routes to /api/v1/group
+app.use("/api/v1/post", postRoute); // Assign post routes to /api/v1/post
+app.use("/api/v1/user", userRoute); // Assign user routes to /api/v1/user
 
 // Start server
 app.listen(port, () => {

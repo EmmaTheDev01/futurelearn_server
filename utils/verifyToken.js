@@ -27,11 +27,11 @@ export const verifyToken = (req, res, next) => {
   });
 };
 
-export const verifyUser = (req, res, next) => {
+export const verifyStudent = (req, res, next) => {
   verifyToken(req, res, () => {
     console.log('User verification:', req.user);
     const { id, role } = req.user;
-    if (id === req.params.id || role === "admin" || role === "user" || role === "lecturer") {
+    if (id === req.params.id || role === "admin" || role === "student" || role === "lecturer") {
       next();
     } else {
       return res.status(403).json({

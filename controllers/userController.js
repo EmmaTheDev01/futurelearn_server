@@ -1,4 +1,4 @@
-import User from '../models/User';
+import User from '../models/User.js';
 import moment from 'moment';
 
 // Update User Controller

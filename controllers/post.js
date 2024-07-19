@@ -1,6 +1,6 @@
 // controllers/postController.js
 
-import Post from '../models/advertModel';
+import Post from '../models/Post.js';
 import mongoose from 'mongoose';
 
 // Create a new post

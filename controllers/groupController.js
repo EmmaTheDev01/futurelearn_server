@@ -1,6 +1,6 @@
-import Group from '../models/Group';
-import User from '../models/User';
-import Assignment from '../models/Assignment';
+import Group from '../models/Group.js';
+import User from '../models/User.js';
+import Assignment from '../models/Assignment.js';
 
 // Function to create a new group
 export const createGroup = async (req, res) => {
@@ -164,5 +164,3 @@ export const submitGroupAssignment = async (req, res) => {
     res.status(500).json({ message: 'Failed to submit assignment', error: error.message });
   }
 };
-
-export { getAllGroups, getGroupById, updateGroupById, deleteGroupById };
