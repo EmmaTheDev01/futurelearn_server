@@ -1,17 +1,24 @@
+import mongoose from 'mongoose';
 import User from '../models/User.js';
-import moment from 'moment';
 
 // Update User Controller
 export const updateUser = async (req, res) => {
     const userId = req.params.id;
     try {
-        const updatedUser = await User.findByIdAndUpdate(userId, { $set: req.body }, { new: true });
+        const updatedUser = await User.findByIdAndUpdate(userId, req.body, { new: true });
+        if (!updatedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
         res.status(200).json({
             success: true,
             message: "Successfully updated user",
             data: updatedUser
         });
     } catch (err) {
+        console.error('Error updating user:', err);
         res.status(500).json({
             success: false,
             message: 'Failed to update user'
@@ -23,13 +30,20 @@ export const updateUser = async (req, res) => {
 export const deleteUser = async (req, res) => {
     const userId = req.params.id;
     try {
-        await User.findByIdAndDelete(userId);
-        return res.status(200).json({
+        const deletedUser = await User.findByIdAndDelete(userId);
+        if (!deletedUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        res.status(200).json({
             success: true,
             message: 'Successfully deleted user'
         });
     } catch (err) {
-        return res.status(500).json({
+        console.error('Error deleting user:', err);
+        res.status(500).json({
             success: false,
             message: 'Failed to delete user'
         });
@@ -41,13 +55,20 @@ export const findUser = async (req, res) => {
     const userId = req.params.id;
     try {
         const foundUser = await User.findById(userId);
-        return res.status(200).json({
+        if (!foundUser) {
+            return res.status(404).json({
+                success: false,
+                message: 'User not found'
+            });
+        }
+        res.status(200).json({
             success: true,
             message: 'User details found',
             data: foundUser,
         });
     } catch (err) {
-        return res.status(404).json({
+        console.error('Error finding user:', err);
+        res.status(500).json({
             success: false,
             message: 'Failed to find user'
         });
@@ -58,18 +79,11 @@ export const findUser = async (req, res) => {
 export const findAllUsers = async (req, res) => {
     try {
         const allUsers = await User.find({});
-        if (allUsers.length > 0) {
-            res.status(200).json({
-                success: true,
-                message: "All users available",
-                data: allUsers,
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: "No users available",
-            });
-        }
+        res.status(200).json({
+            success: true,
+            message: allUsers.length > 0 ? "All users available" : "No users available",
+            data: allUsers,
+        });
     } catch (error) {
         console.error('Error fetching users:', error);
         res.status(500).json({
@@ -83,18 +97,11 @@ export const findAllUsers = async (req, res) => {
 export const findAllStudents = async (req, res) => {
     try {
         const students = await User.find({ role: 'student' });
-        if (students.length > 0) {
-            res.status(200).json({
-                success: true,
-                message: "All students available",
-                data: students,
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: "No students available",
-            });
-        }
+        res.status(200).json({
+            success: true,
+            message: students.length > 0 ? "All students available" : "No students available",
+            data: students,
+        });
     } catch (error) {
         console.error('Error fetching students:', error);
         res.status(500).json({
@@ -108,18 +115,11 @@ export const findAllStudents = async (req, res) => {
 export const findAllLecturers = async (req, res) => {
     try {
         const lecturers = await User.find({ role: 'lecturer' });
-        if (lecturers.length > 0) {
-            res.status(200).json({
-                success: true,
-                message: "All lecturers available",
-                data: lecturers,
-            });
-        } else {
-            res.status(404).json({
-                success: false,
-                message: "No lecturers available",
-            });
-        }
+        res.status(200).json({
+            success: true,
+            message: lecturers.length > 0 ? "All lecturers available" : "No lecturers available",
+            data: lecturers,
+        });
     } catch (error) {
         console.error('Error fetching lecturers:', error);
         res.status(500).json({
@@ -156,3 +156,12 @@ export const updateUserRole = async (req, res) => {
     }
 };
 
+export default {
+    updateUser,
+    deleteUser,
+    findUser,
+    findAllUsers,
+    findAllStudents,
+    findAllLecturers,
+    updateUserRole
+};
