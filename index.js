@@ -11,6 +11,7 @@ import groupRoute from "./routes/groupRoutes.js"; // Import group routes
 import postRoute from "./routes/post.js"; // Import post routes
 import userRoute from "./routes/users.js"; // Import user routes
 import conversationRoute from "./routes/conversation.js";
+import emailRoute from "./routes/emailRoutes.js";
 import { errorHandler } from "./errorHandler.js";
 
 // Load environment variables
@@ -63,6 +64,7 @@ app.use("/api/v1/group", groupRoute); // Assign group routes to /api/v1/group
 app.use("/api/v1/post", postRoute); // Assign post routes to /api/v1/post
 app.use("/api/v1/user", userRoute); // Assign user routes to /api/v1/user
 app.use("/api/v1/chat", conversationRoute);
+app.use("/api/v1/email", emailRoute);
 
 // Start server
 app.listen(port, () => {
