@@ -4,7 +4,7 @@ import Announcement from '../models/Announcement.js';
 import mongoose from 'mongoose';
 
 // Create a new Announcement
-const createAnnouncement = async (req, res) => {
+export const createAnnouncement = async (req, res) => {
   try {
     const { title, desc, imageUrl, redirect } = req.body;
     
@@ -23,7 +23,7 @@ const createAnnouncement = async (req, res) => {
 };
 
 // Get all Announcements
-const getAllAnnouncements = async (req, res) => {
+export const getAllAnnouncements = async (req, res) => {
   try {
     const Announcements = await Announcement.find();
     res.status(200).json(Announcements);
@@ -33,7 +33,7 @@ const getAllAnnouncements = async (req, res) => {
 };
 
 // Get a Announcement by ID
-const getAnnouncementById = async (req, res) => {
+export const getAnnouncementById = async (req, res) => {
   try {
     const AnnouncementId = req.params.id;
     const Announcement = await Announcement.findById(AnnouncementId);
@@ -47,7 +47,7 @@ const getAnnouncementById = async (req, res) => {
 };
 
 // Update a Announcement by ID
-const updateAnnouncementById = async (req, res) => {
+export const updateAnnouncementById = async (req, res) => {
   try {
     const AnnouncementId = req.params.id;
     const updatedAnnouncement = req.body; // Assuming req.body contains updated Announcement information
@@ -62,7 +62,7 @@ const updateAnnouncementById = async (req, res) => {
 };
 
 // Delete a Announcement by ID
-const deleteAnnouncementById = async (req, res) => {
+export const deleteAnnouncementById = async (req, res) => {
   try {
     const AnnouncementId = req.params.id;
     const result = await Announcement.findByIdAndDelete(AnnouncementId);
@@ -76,7 +76,7 @@ const deleteAnnouncementById = async (req, res) => {
 };
 
 // Update approval status of a Announcement
-const updateApprovalStatus = async (req, res) => {
+export const updateApprovalStatus = async (req, res) => {
   try {
     const AnnouncementId = req.params.id;
     const { approved } = req.body;
@@ -90,11 +90,4 @@ const updateApprovalStatus = async (req, res) => {
   }
 };
 
-export {
-  createAnnouncement,
-  getAllAnnouncements,
-  getAnnouncementById,
-  updateAnnouncementById,
-  deleteAnnouncementById,
-  updateApprovalStatus,
-};
+
