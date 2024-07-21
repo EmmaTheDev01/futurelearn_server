@@ -1,6 +1,6 @@
 import mongoose from "mongoose";
 
-const advertSchema = new mongoose.Schema(
+const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
@@ -26,4 +26,4 @@ const advertSchema = new mongoose.Schema(
   { timestamps: true }
 );
 
-export default mongoose.model("Post", advertSchema);
+export default mongoose.model("Post", postSchema);

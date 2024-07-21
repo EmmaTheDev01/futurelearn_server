@@ -12,6 +12,7 @@ import postRoute from "./routes/post.js"; // Import post routes
 import userRoute from "./routes/users.js"; // Import user routes
 import conversationRoute from "./routes/conversation.js";
 import emailRoute from "./routes/emailRoutes.js";
+import announcementRoute from "./routes/announcement.js";
 import { errorHandler } from "./errorHandler.js";
 
 // Load environment variables
@@ -65,6 +66,7 @@ app.use("/api/v1/post", postRoute); // Assign post routes to /api/v1/post
 app.use("/api/v1/user", userRoute); // Assign user routes to /api/v1/user
 app.use("/api/v1/chat", conversationRoute);
 app.use("/api/v1/email", emailRoute);
+app.use("/api/v1/announcement", announcementRoute);
 
 // Start server
 app.listen(port, () => {
