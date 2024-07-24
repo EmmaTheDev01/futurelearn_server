@@ -101,3 +101,39 @@ export const getUserParticipatedConversations = async (req, res) => {
     res.status(500).json({ message: 'Failed to fetch user participated conversations', error: error.message });
   }
 };
+
+// Function to search for conversations using username, firstname, lastname, or email of a user
+export const searchConversations = async (req, res) => {
+  const { query } = req.params; // Search query
+
+  try {
+    // Find users matching the search query
+    const users = await User.find({
+      $or: [
+        { username: new RegExp(query, 'i') },
+        { firstname: new RegExp(query, 'i') },
+        { lastname: new RegExp(query, 'i') },
+        { email: new RegExp(query, 'i') }
+      ]
+    });
+
+    if (users.length === 0) {
+      return res.status(404).json({ message: 'No users found' });
+    }
+
+    // Extract user IDs from the found users
+    const userIds = users.map(user => user._id);
+
+    // Find conversations involving the found users
+    const conversations = await Conversation.find({
+      participants: { $in: userIds },
+      deleted: false
+    })
+      .populate('participants', 'username firstname lastname email') // Populate participant details
+      .populate('messages.sender', 'username');
+
+    res.status(200).json(conversations);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to search conversations', error: error.message });
+  }
+};
