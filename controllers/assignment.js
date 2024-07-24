@@ -5,7 +5,7 @@ import User from '../models/User.js';
 // Function to create a new assignment
 export const createAssignment = async (req, res) => {
   try {
-    const { title, description, lecturerId } = req.body;
+    const { title, description, department,lecturerId } = req.body;
 
     // Check if lecturer exists and is valid
     const lecturer = await User.findById(lecturerId);
@@ -18,6 +18,7 @@ export const createAssignment = async (req, res) => {
       title,
       description,
       lecturer: lecturerId,
+      department,
     });
 
     await newAssignment.save();

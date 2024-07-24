@@ -53,6 +53,11 @@ const userSchema = new mongoose.Schema(
         required: false,
       },
     },
+    department: {
+      type: String,
+      enum: ['computer science', 'Surveying', 'Civil Engineering', 'Architecture', 'Business','law', 'not assigned'],
+      default: 'not assigned',
+    },
     role: {
       type: String,
       enum: ['student', 'lecturer', 'admin'],

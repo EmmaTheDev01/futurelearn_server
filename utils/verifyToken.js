@@ -50,7 +50,7 @@ export const verifyAdmin = (req, res, next) => {
     } else {
       return res.status(403).json({
         success: false,
-        message: "Only admins can access this route",
+        message: "You are not authorized to access this resource",
       });
     }
   });
@@ -59,7 +59,7 @@ export const verifyAdmin = (req, res, next) => {
 export const verifyLecturer = (req, res, next) => {
   verifyToken(req, res, () => {
     console.log('Lecturer verification:', req.user);
-    if (req.user.role === "lecturer") {
+    if (req.user.role === "lecturer" || req.user.role === "admin") {
       next();
     } else {
       return res.status(403).json({

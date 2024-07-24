@@ -8,12 +8,12 @@ import {
   updateAnnouncementById,
   deleteAnnouncementById,
   updateApprovalStatus,
-} from '../controllers/announcement.js'; // Corrected import path
+} from '../controllers/announcement.js';
 
 const router = express.Router();
 
 // Create a new Announcement
-router.post('/create', createAnnouncement); // Changed to router.post
+router.post('/create', createAnnouncement); 
 
 // Get all Announcements
 router.get('/', getAllAnnouncements);

@@ -10,6 +10,11 @@ const assignmentSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+    department: {
+      type: String,
+      enum: ['computer science', 'Surveying', 'Civil Engineering', 'Architecture', 'Business','law', 'all'],
+      default: 'all',
+    },
     lecturer: {
       type: mongoose.Schema.Types.ObjectId,
       ref: 'User',
