@@ -1,22 +1,31 @@
+import mongoose from 'mongoose';
 import Conversation from '../models/Conversation.js';
 import User from '../models/User.js';
 
-// Function to create a new conversation or retrieve an existing one
+// Helper function to validate ObjectIds
+const isValidObjectId = (id) => mongoose.Types.ObjectId.isValid(id);
+
 export const createConversation = async (req, res) => {
-  const { userId } = req.params; // User initiating the conversation
-  const { participantId } = req.body; // The other participant
+  const userId = req.user._id; // Assuming userId is retrieved from authentication
+  const { participants } = req.body; // Expecting an array of participants
+
+  console.log('Participants received:', participants); // Debugging log
+
+  if (!Array.isArray(participants) || participants.length !== 2 || !participants.every(id => isValidObjectId(id))) {
+    return res.status(400).json({ message: 'Invalid participants format or length' });
+  }
 
   try {
     // Check if participants exist and are valid users
-    const existingParticipants = await User.find({ _id: { $in: [userId, participantId] } });
+    const existingParticipants = await User.find({ _id: { $in: participants } });
     if (existingParticipants.length !== 2) {
       return res.status(404).json({ message: 'One or more participants not found' });
     }
 
     // Check if conversation already exists between these participants
     const existingConversation = await Conversation.findOne({
-      participants: { $all: [userId, participantId] },
-      deleted: false // Assuming there's a field 'deleted' in Conversation model
+      participants: { $all: participants },
+      deleted: false
     });
 
     if (existingConversation) {
@@ -24,14 +33,17 @@ export const createConversation = async (req, res) => {
     }
 
     // Create new conversation
-    const newConversation = new Conversation({ participants: [userId, participantId] });
+    const newConversation = new Conversation({ participants });
     await newConversation.save();
 
     res.status(201).json(newConversation);
   } catch (error) {
+    console.error('Error creating or retrieving conversation:', error);
     res.status(500).json({ message: 'Failed to create or retrieve conversation', error: error.message });
   }
 };
+
+
 
 // Function to get conversations for a user
 export const getUserConversations = async (req, res) => {

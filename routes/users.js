@@ -15,7 +15,7 @@ const router = express.Router();
 // Protected routes
 router.put('/:id', updateUser);
 router.delete('/:id', deleteUser);
-router.get('/:id', findUser);
+router.get('/:id', verifyStudent, findUser);
 
 // Admin routes
 router.get('/', verifyStudent, findAllUsers);

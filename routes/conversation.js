@@ -5,7 +5,7 @@ import { verifyStudent } from '../utils/verifyToken.js';
 const router = express.Router();
 
 // POST /api/v1/conversation/start/:userId - Create a new conversation
-router.post('/start/:userId', verifyStudent, createConversation);
+router.post('/start', verifyStudent, createConversation);
 
 // GET /api/v1/conversation/user/:userId - Get conversations for a user
 router.get('/user/:userId', verifyStudent, getUserConversations);
