@@ -13,7 +13,9 @@ import userRoute from "./routes/users.js"; // Import user routes
 import conversationRoute from "./routes/conversation.js";
 import emailRoute from "./routes/emailRoutes.js";
 import announcementRoute from "./routes/announcement.js";
+import chatBotRoute from './routes/chatbot.js';
 import { errorHandler } from "./errorHandler.js";
+
 
 // Load environment variables
 dotenv.config();
@@ -67,6 +69,7 @@ app.use("/api/v1/user", userRoute); // Assign user routes to /api/v1/user
 app.use("/api/v1/chat", conversationRoute);
 app.use("/api/v1/email", emailRoute);
 app.use("/api/v1/announcement", announcementRoute);
+app.use("/api/v1/chatbot", chatBotRoute);
 
 // Start server
 app.listen(port, () => {
