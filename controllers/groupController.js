@@ -18,10 +18,17 @@ export const createGroup = async (req, res) => {
       return res.status(404).json({ message: 'One or more members not found' });
     }
 
+    // Check if any of the members are already in another group
+    const existingGroups = await Group.find({ members: { $in: memberIds } });
+    if (existingGroups.length > 0) {
+      const groupNames = existingGroups.map(group => group.name).join(', ');
+      return res.status(400).json({ message: `One or more members are already in the following groups: ${groupNames}` });
+    }
+
     // Create new group
     const newGroup = new Group({
       name,
-      chief: chiefId,
+      chief: chiefId, // Set chiefId to the chief field
       members: memberIds,
       message,
     });
@@ -33,7 +40,6 @@ export const createGroup = async (req, res) => {
     res.status(500).json({ message: 'Failed to create group', error: error.message });
   }
 };
-
 // Function to get all groups
 export const getAllGroups = async (req, res) => {
   try {
@@ -164,3 +170,16 @@ export const submitGroupAssignment = async (req, res) => {
     res.status(500).json({ message: 'Failed to submit assignment', error: error.message });
   }
 };
+
+// Function to fetch groups that a user participates in
+export const getMyGroups = async (req, res) => {
+  const userId = req.user.id; 
+  
+  try {
+    const groups = await Group.find({ members: userId }).populate('members', 'firstname lastname');
+    res.status(200).json(groups);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch groups', error: error.message });
+  }
+};
+

@@ -54,6 +54,14 @@ export const deleteUser = async (req, res) => {
 export const findUser = async (req, res) => {
     const userId = req.params.id;
     try {
+        // Check if userId is a valid ObjectId
+        if (!mongoose.Types.ObjectId.isValid(userId)) {
+            return res.status(404).json({
+                success: false,
+                message: 'Invalid user ID'
+            });
+        }
+
         const foundUser = await User.findById(userId);
         if (!foundUser) {
             return res.status(404).json({
@@ -74,7 +82,6 @@ export const findUser = async (req, res) => {
         });
     }
 };
-
 // Find All Users Controller
 export const findAllUsers = async (req, res) => {
     try {
@@ -93,13 +100,24 @@ export const findAllUsers = async (req, res) => {
     }
 };
 
-// Find All Students Controller
+// findAllStudents Controller to fetch only students
 export const findAllStudents = async (req, res) => {
     try {
         const students = await User.find({ role: 'student' });
+
+        if (!students || students.length === 0) {
+            console.log('No students found');
+            return res.status(404).json({
+                success: false,
+                message: "No students found",
+                data: []
+            });
+        }
+
+        console.log(`Found ${students.length} students`);
         res.status(200).json({
             success: true,
-            message: students.length > 0 ? "All students available" : "No students available",
+            message: "Students found",
             data: students,
         });
     } catch (error) {
@@ -107,6 +125,7 @@ export const findAllStudents = async (req, res) => {
         res.status(500).json({
             success: false,
             message: "Internal server error",
+            error: error.message // Include the error message in the response for debugging
         });
     }
 };

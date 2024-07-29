@@ -8,7 +8,7 @@ import {
   findAllLecturers,
   updateUserRole,
 } from '../controllers/userController.js';
-import { verifyAdmin, verifyStudent } from '../utils/verifyToken.js';
+import { verifyAdmin, verifyLecturer, verifyStudent } from '../utils/verifyToken.js';
 
 const router = express.Router();
 
@@ -19,7 +19,7 @@ router.get('/:id', verifyStudent, findUser);
 
 // Admin routes
 router.get('/', verifyStudent, findAllUsers);
-router.get('/students', verifyAdmin, findAllStudents);
+router.get('/students', findAllStudents);
 router.get('/lecturers', verifyAdmin, findAllLecturers);
 router.put('/:id/updateRole', verifyAdmin, updateUserRole);
 

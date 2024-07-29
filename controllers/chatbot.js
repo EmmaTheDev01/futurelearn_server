@@ -19,8 +19,6 @@ export const handleChatMessage = async (req, res) => {
                 messages: [
                     { role: 'user', content: message } // Correct message format
                 ],
-                max_tokens: 150, // Adjust the number of tokens as needed
-                temperature: 0.7, // Adjust the temperature for randomness
             },
             {
                 headers: {

@@ -27,6 +27,7 @@ export const register = async (req, res) => {
           username,
           email,
           phone,
+          department,
           password: hash,
           photo: {
             public_id: myCloud.public_id,
