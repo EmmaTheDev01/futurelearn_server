@@ -30,6 +30,17 @@ const groupSchema = new mongoose.Schema(
         },
       },
     ],
+    answers: [
+      {
+        assignment: {
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'Assignment',
+        },
+        answer: {
+          type: String,
+        },
+      },
+    ],
     message: {
       type: String,
       required: true,

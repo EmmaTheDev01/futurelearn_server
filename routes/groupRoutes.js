@@ -1,3 +1,4 @@
+// groupRoutes.js
 import express from 'express';
 import {
   createGroup,
@@ -9,20 +10,18 @@ import {
   submitGroupAssignment,
   getMyGroups,
 } from '../controllers/groupController.js';
-import { verifyLecturer, verifyStudent } from '../utils/verifyToken.js';
+import { verifyAdmin, verifyLecturer, verifyStudent } from '../utils/verifyToken.js';
 
 const router = express.Router();
 
-// Public routes
+// Define routes here
 router.post('/create', verifyLecturer, createGroup);
-router.get('/', getAllGroups);
-router.get('/my-group',verifyStudent, getMyGroups); // Move this route up
+router.get('/',verifyAdmin, getAllGroups);
+router.get('/my-group', verifyStudent, getMyGroups);
 router.get('/:id', getGroupById);
-
-// Protected routes for group chief
 router.put('/:id', updateGroupById);
 router.delete('/:id', deleteGroupById);
-router.post('/:id/submitAnswers', submitAssignmentAnswers);
-router.post('/:id/submitAssignment', submitGroupAssignment);
+router.put('/:groupId/answer', verifyStudent, submitAssignmentAnswers);
+router.post('/:id/submit', verifyStudent, submitGroupAssignment);
 
 export default router;

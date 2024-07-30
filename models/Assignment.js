@@ -12,7 +12,7 @@ const assignmentSchema = new mongoose.Schema(
     },
     department: {
       type: String,
-      enum: ['computer science', 'Surveying', 'Civil Engineering', 'Architecture', 'Business','law', 'all'],
+      enum: ['computer science', 'Surveying', 'Civil Engineering', 'Architecture', 'Business', 'law', 'all'],
       default: 'all',
     },
     lecturer: {
@@ -22,7 +22,7 @@ const assignmentSchema = new mongoose.Schema(
     },
     groups: [
       {
-        group: {
+        groupId: {
           type: mongoose.Schema.Types.ObjectId,
           ref: 'Group',
         },

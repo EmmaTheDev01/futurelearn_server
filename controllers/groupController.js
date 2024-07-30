@@ -93,41 +93,70 @@ export const deleteGroupById = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete group', error: error.message });
   }
 };
-
-// Function for a member to submit their assignment answers
+//controller to answer to the assignment question
 export const submitAssignmentAnswers = async (req, res) => {
-  const groupId = req.params.id;
+  const groupId = req.params.groupId;
   const { assignmentId, answers } = req.body;
 
+  console.log('submitAssignmentAnswers function started');
+  console.log('Request Parameters:', { groupId, assignmentId });
+  console.log('User ID:', req.user.id);
+
   try {
-    // Check if group exists
+    // Find the group
     const group = await Group.findById(groupId);
     if (!group) {
+      console.log('Group not found:', { groupId });
       return res.status(404).json({ message: 'Group not found' });
     }
+    console.log('Group found:', { group });
 
-    // Ensure only group members can submit their answers
+    // Check if user is a member of the group
     if (!group.members.includes(req.user.id)) {
+      console.log('User is not a member of the group:', { groupId, userId: req.user.id });
       return res.status(403).json({ message: 'Only group members can submit answers' });
     }
+    console.log('User is a member of the group:', { groupId, userId: req.user.id });
 
-    // Find assignment in which group is participating
-    const assignment = await Assignment.findOne({ _id: assignmentId, 'groups.groupId': groupId });
+    // Find the assignment and check if the group is participating
+    const assignment = await Assignment.findOne({
+      _id: assignmentId,
+      'groups.groupId': groupId,
+    });
     if (!assignment) {
+      console.log('Assignment not found or group is not participating:', { assignmentId, groupId });
       return res.status(404).json({ message: 'Assignment not found or group is not participating' });
     }
+    console.log('Assignment found:', { assignment });
 
-    // Update group's answers in the assignment
-    const groupIndex = assignment.groups.findIndex(g => g.groupId.toString() === groupId);
-    assignment.groups[groupIndex].answers = answers;
+    // Check if the group has already submitted an answer for this assignment
+    const existingAnswerIndex = group.answers.findIndex(
+      (a) => a.assignment.toString() === assignmentId
+    );
 
-    await assignment.save();
+    if (existingAnswerIndex !== -1) {
+      // Update existing answer
+      console.log('Updating existing answer for assignment:', { assignmentId, groupId });
+      group.answers[existingAnswerIndex].answer = answers;
+    } else {
+      // Add new answer
+      console.log('Adding new answer for assignment:', { assignmentId, groupId });
+      group.answers.push({
+        assignment: assignmentId,
+        answer: answers,
+      });
+    }
+
+    await group.save();
+    console.log('Group answers saved successfully');
 
     res.status(200).json({ message: 'Assignment answers submitted successfully' });
   } catch (error) {
+    console.error('Failed to submit assignment answers', { error: error.message });
     res.status(500).json({ message: 'Failed to submit assignment answers', error: error.message });
   }
 };
+
 
 // Function for the chief to submit the group's assignment after all answers are in
 export const submitGroupAssignment = async (req, res) => {

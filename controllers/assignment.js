@@ -5,7 +5,7 @@ import User from '../models/User.js';
 // Function to create a new assignment
 export const createAssignment = async (req, res) => {
   try {
-    const { title, description, department,lecturerId } = req.body;
+    const { title, description, department, lecturerId } = req.body;
 
     // Check if lecturer exists and is valid
     const lecturer = await User.findById(lecturerId);
@@ -152,5 +152,63 @@ export const gradeAssignment = async (req, res) => {
     res.status(200).json({ message: 'Assignment graded successfully' });
   } catch (error) {
     res.status(500).json({ message: 'Failed to grade assignment', error: error.message });
+  }
+};
+
+// Function to get assignments by department
+export const getAssignmentsByDepartment = async (req, res) => {
+  const { department } = req.query;
+
+  if (!department) {
+    return res.status(400).json({ message: 'Department parameter is required' });
+  }
+
+  try {
+    const assignments = await Assignment.find({ department });
+    if (assignments.length === 0) {
+      return res.status(404).json({ message: 'No assignments found for this department' });
+    }
+    res.status(200).json(assignments);
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to fetch assignments by department', error: error.message });
+  }
+};
+
+// Function to add a group to an assignment
+export const addGroupToAssignment = async (req, res) => {
+  const assignmentId = req.params.id;
+  const { groupId } = req.body;
+
+  try {
+    // Check if assignment exists
+    const assignment = await Assignment.findById(assignmentId);
+    if (!assignment) {
+      return res.status(404).json({ message: 'Assignment not found' });
+    }
+
+    // Check if group exists
+    const group = await Group.findById(groupId);
+    if (!group) {
+      return res.status(404).json({ message: 'Group not found' });
+    }
+
+    // Check if the group is already added to the assignment
+    const groupExists = assignment.groups.some(g => g.groupId.toString() === groupId);
+    if (groupExists) {
+      return res.status(400).json({ message: 'Group is already participating in this assignment' });
+    }
+
+    // Add the group to the assignment
+    assignment.groups.push({
+      groupId,
+      answers: [],  // Initialize answers as an empty array
+      completed: false, // Initialize as not completed
+    });
+
+    await assignment.save();
+
+    res.status(200).json({ message: 'Group added to the assignment successfully' });
+  } catch (error) {
+    res.status(500).json({ message: 'Failed to add group to the assignment', error: error.message });
   }
 };
