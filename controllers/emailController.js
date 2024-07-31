@@ -1,12 +1,11 @@
-// controllers/emailController.js
-
 import nodemailer from 'nodemailer';
 import Email from '../models/Email.js';
+import { v4 as uuidv4 } from 'uuid'; // For generating unique IDs
 
 const transporter = nodemailer.createTransport({
-  host: 'smtp.example.com',
-  port: 587,
-  secure: false,
+  host: 'smtp.gmail.com',
+  port: 465,
+  secure: true,
   auth: {
     user: process.env.EMAIL_USER,
     pass: process.env.EMAIL_PASS
@@ -23,6 +22,9 @@ export const sendEmail = async (req, res) => {
       return res.status(400).json({ message: 'Missing required fields' });
     }
 
+    // Generate a new threadId if not provided (for new threads)
+    const newThreadId = threadId || uuidv4();
+
     // Create email object
     const newEmail = new Email({
       from,
@@ -30,10 +32,10 @@ export const sendEmail = async (req, res) => {
       subject,
       text,
       html,
-      threadId
+      threadId: newThreadId // Use the existing or newly generated threadId
     });
 
-    // Save email to database (optional)
+    // Save email to database
     await newEmail.save();
 
     // Send email using Nodemailer
@@ -52,88 +54,93 @@ export const sendEmail = async (req, res) => {
   }
 };
 
+// Function to get all emails a user participates in by email addresses
+export const getUserEmails = async (req, res) => {
+  try {
+    const { userEmail } = req.params;
 
-// Function to get email conversations (threads)
-export const getEmailThreads = async (req, res) => {
-    try {
-      const { userId } = req.params;
-  
-      // Find all emails where userId is either sender or recipient
-      const emails = await Email.find({
-        $or: [
-          { from: userId },
-          { to: userId }
-        ]
-      }).sort({ createdAt: -1 });
-  
-      // Group emails by threadId to form conversations
-      const conversations = {};
-      emails.forEach(email => {
-        const threadId = email.threadId;
-        if (!conversations[threadId]) {
-          conversations[threadId] = [];
-        }
-        conversations[threadId].push(email);
-      });
-  
-      res.status(200).json({ message: 'Email conversations retrieved successfully', conversations });
-    } catch (error) {
-      console.error('Error fetching email conversations:', error);
-      res.status(500).json({ message: 'Failed to fetch email conversations', error: error.message });
+    if (!userEmail) {
+      return res.status(400).json({ message: 'User email is required' });
     }
-  };
 
-// Function to get a conversation by threadId
-export const getConversationById = async (req, res) => {
-    const { threadId } = req.params;
-  
-    try {
-      // Find all emails with the given threadId
-      const conversation = await Email.find({ threadId });
-  
-      if (!conversation || conversation.length === 0) {
-        return res.status(404).json({ message: 'Conversation not found' });
-      }
-  
-      res.status(200).json({ message: 'Conversation retrieved successfully', conversation });
-    } catch (error) {
-      console.error('Error fetching conversation:', error);
-      res.status(500).json({ message: 'Failed to fetch conversation', error: error.message });
-    }
-  };
-  
-  // Function to reply to a conversation by threadId
-  export const replyToConversation = async (req, res) => {
-    const { threadId } = req.params;
-    const { from, to, subject, text, html } = req.body;
-  
-    try {
-      // Create email object for reply
-      const replyEmail = new Email({
-        from,
-        to,
-        subject,
-        text,
-        html,
-        threadId
-      });
-  
-      // Save reply email to database (optional)
-      await replyEmail.save();
-  
-      // Send reply email using Nodemailer
-      await transporter.sendMail({
-        from,
-        to,
-        subject,
-        text,
-        html
-      });
-  
-      res.status(200).json({ message: 'Reply sent successfully', email: replyEmail });
-    } catch (error) {
-      console.error('Error replying to conversation:', error);
-      res.status(500).json({ message: 'Failed to reply to conversation', error: error.message });
-    }
-  };
+    // Find all emails where userEmail is either sender or recipient
+    const emails = await Email.find({
+      $or: [
+        { from: userEmail },
+        { to: userEmail }
+      ]
+    }).sort({ createdAt: -1 });
 
+    // Log emails for debugging
+    console.log('Querying for userEmail:', userEmail);
+    console.log('Retrieved emails:', emails);
+
+    if (emails.length === 0) {
+      return res.status(404).json({ message: 'No emails found for this user' });
+    }
+
+    res.status(200).json({ message: 'Emails retrieved successfully', emails });
+  } catch (error) {
+    console.error('Error fetching emails:', error);
+    res.status(500).json({ message: 'Failed to fetch emails', error: error.message });
+  }
+};
+
+// Function to reply to a conversation by threadId
+export const replyToConversation = async (req, res) => {
+  const { threadId } = req.params;
+  const { from, to, subject, text, html } = req.body;
+
+  try {
+    // Check if threadId is provided
+    if (!threadId) {
+      return res.status(400).json({ message: 'Thread ID is required for replies' });
+    }
+
+    // Create email object for reply
+    const replyEmail = new Email({
+      from,
+      to,
+      subject,
+      text,
+      html,
+      threadId // Use the existing threadId for replies
+    });
+
+    // Save reply email to database
+    await replyEmail.save();
+
+    // Send reply email using Nodemailer
+    await transporter.sendMail({
+      from,
+      to,
+      subject,
+      text,
+      html
+    });
+
+    res.status(200).json({ message: 'Reply sent successfully', email: replyEmail });
+  } catch (error) {
+    console.error('Error replying to conversation:', error);
+    res.status(500).json({ message: 'Failed to reply to conversation', error: error.message });
+  }
+};
+
+// Function to get an email by its ID
+export const getEmailById = async (req, res) => {
+  const { emailId } = req.params;
+
+  try {
+    // Find email by its ID
+    const email = await Email.findById(emailId);
+
+    if (!email) {
+      return res.status(404).json({ message: 'Email not found' });
+    }
+
+    res.status(200).json({ message: 'Email retrieved successfully', email });
+  } catch (error) {
+    console.error('Error fetching email:', error);
+    res.status(500).json({ message: 'Failed to fetch email', error: error.message });
+  }
+};

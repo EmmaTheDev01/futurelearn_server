@@ -30,7 +30,7 @@ export const verifyToken = (req, res, next) => {
 // Middleware for student role verification
 export const verifyStudent = (req, res, next) => {
   verifyToken(req, res, () => {
-    console.log('Student verification:', req.user);
+    console.log('User verification:', req.user);
     const { id, role } = req.user;
     if (id === req.params.id || role === 'admin' || role === 'student' || role === 'lecturer') {
       next();
@@ -62,7 +62,7 @@ export const verifyAdmin = (req, res, next) => {
 export const verifyLecturer = (req, res, next) => {
   verifyToken(req, res, () => {
     console.log('Lecturer verification:', req.user);
-    if (req.user.role === 'lecturer' || req.user.role === 'admin') {
+    if (req.user && req.user.role === 'lecturer' || req.user.role === 'admin') {
       next();
     } else {
       return res.status(403).json({

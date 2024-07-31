@@ -16,12 +16,12 @@ const router = express.Router();
 
 // Define routes here
 router.post('/create', verifyLecturer, createGroup);
-router.get('/',verifyAdmin, getAllGroups);
+router.get('/', verifyLecturer, getAllGroups);
 router.get('/my-group', verifyStudent, getMyGroups);
 router.get('/:id', getGroupById);
 router.put('/:id', updateGroupById);
 router.delete('/:id', deleteGroupById);
-router.put('/:groupId/answer', verifyStudent, submitAssignmentAnswers);
+router.put('/:groupId/submit-answers', verifyStudent, submitAssignmentAnswers);
 router.post('/:id/submit', verifyStudent, submitGroupAssignment);
 
 export default router;

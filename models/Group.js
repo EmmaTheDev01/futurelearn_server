@@ -39,6 +39,10 @@ const groupSchema = new mongoose.Schema(
         answer: {
           type: String,
         },
+        user: {  // New field to reference the user who posted the answer
+          type: mongoose.Schema.Types.ObjectId,
+          ref: 'User',
+        },
       },
     ],
     message: {

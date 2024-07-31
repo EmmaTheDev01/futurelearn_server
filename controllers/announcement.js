@@ -6,12 +6,11 @@ import mongoose from 'mongoose';
 // Create a new Announcement
 export const createAnnouncement = async (req, res) => {
   try {
-    const { title, desc, imageUrl, redirect } = req.body;
+    const { title, desc, redirect } = req.body;
     
     const newAnnouncement = new Announcement({
       title,
       desc,
-      imageUrl,
       redirect,
     });
 

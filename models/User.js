@@ -55,7 +55,7 @@ const userSchema = new mongoose.Schema(
     },
     department: {
       type: String,
-      enum: ['computer science', 'Surveying', 'Civil Engineering', 'Architecture', 'Business','law', 'not assigned'],
+      enum: ['computer science', 'Surveying', 'Civil Engineering', 'Architecture', 'Business', 'law', 'not assigned'],
       default: 'not assigned',
     },
     role: {

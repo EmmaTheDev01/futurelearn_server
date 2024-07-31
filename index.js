@@ -62,10 +62,10 @@ app.use(errorHandler);
 
 // Routes
 app.use("/api/v1/auth", authRoute);
-app.use("/api/v1/assignment", assignmentRoute); // Assign assignment routes to /api/v1/assignment
-app.use("/api/v1/group", groupRoute); // Assign group routes to /api/v1/group
-app.use("/api/v1/post", postRoute); // Assign post routes to /api/v1/post
-app.use("/api/v1/user", userRoute); // Assign user routes to /api/v1/user
+app.use("/api/v1/assignment", assignmentRoute); 
+app.use("/api/v1/group", groupRoute);
+app.use("/api/v1/post", postRoute); 
+app.use("/api/v1/user", userRoute); 
 app.use("/api/v1/chat", conversationRoute);
 app.use("/api/v1/email", emailRoute);
 app.use("/api/v1/announcement", announcementRoute);

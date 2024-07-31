@@ -93,69 +93,76 @@ export const deleteGroupById = async (req, res) => {
     res.status(500).json({ message: 'Failed to delete group', error: error.message });
   }
 };
-//controller to answer to the assignment question
-export const submitAssignmentAnswers = async (req, res) => {
-  const groupId = req.params.groupId;
-  const { assignmentId, answers } = req.body;
 
-  console.log('submitAssignmentAnswers function started');
-  console.log('Request Parameters:', { groupId, assignmentId });
-  console.log('User ID:', req.user.id);
+export const submitAssignmentAnswers = async (req, res) => {
+  const { groupId } = req.params; // Extract groupId from URL parameters
+  const { assignmentId, answers } = req.body;
+  const userId = req.user.id; // Assuming userId is set in req.user from authentication middleware
+
+  console.log("submitAssignmentAnswers function started");
+  console.log("Request Parameters:", { groupId, assignmentId, answers });
+  console.log("User:", req.user);
 
   try {
-    // Find the group
+    // Check if the group exists
     const group = await Group.findById(groupId);
+    
+    // Debug log to verify groupId and fetched group
+    console.log("Fetched Group Data:", group);
+
     if (!group) {
-      console.log('Group not found:', { groupId });
-      return res.status(404).json({ message: 'Group not found' });
+      console.log("Group not found");
+      return res.status(404).json({ error: "Group not found" });
     }
-    console.log('Group found:', { group });
+
+    console.log("Group found:", group);
 
     // Check if user is a member of the group
-    if (!group.members.includes(req.user.id)) {
-      console.log('User is not a member of the group:', { groupId, userId: req.user.id });
-      return res.status(403).json({ message: 'Only group members can submit answers' });
+    if (!group.members.some(member => member.toString() === userId.toString())) {
+      console.log("User is not a member of the group");
+      return res.status(403).json({ error: "User is not a member of this group" });
     }
-    console.log('User is a member of the group:', { groupId, userId: req.user.id });
 
-    // Find the assignment and check if the group is participating
-    const assignment = await Assignment.findOne({
-      _id: assignmentId,
-      'groups.groupId': groupId,
-    });
-    if (!assignment) {
-      console.log('Assignment not found or group is not participating:', { assignmentId, groupId });
-      return res.status(404).json({ message: 'Assignment not found or group is not participating' });
+    console.log("User is a member of the group:", { groupId, userId });
+
+    // Process answers
+    if (!assignmentId || !answers) {
+      console.log("Invalid input");
+      return res.status(400).json({ error: "Invalid input" });
     }
-    console.log('Assignment found:', { assignment });
 
-    // Check if the group has already submitted an answer for this assignment
+    // Example of updating answers, assuming the structure of your group model
     const existingAnswerIndex = group.answers.findIndex(
-      (a) => a.assignment.toString() === assignmentId
+      a => a.assignment.toString() === assignmentId.toString() && a.user.toString() === userId.toString()
     );
 
     if (existingAnswerIndex !== -1) {
       // Update existing answer
-      console.log('Updating existing answer for assignment:', { assignmentId, groupId });
+      console.log("Updating existing answer for assignment:", { assignmentId, userId });
       group.answers[existingAnswerIndex].answer = answers;
     } else {
       // Add new answer
-      console.log('Adding new answer for assignment:', { assignmentId, groupId });
+      console.log("Adding new answer for assignment:", { assignmentId, userId });
       group.answers.push({
         assignment: assignmentId,
-        answer: answers,
+        user: userId,
+        answer: answers
       });
     }
 
+    // Save group with updated answers
     await group.save();
-    console.log('Group answers saved successfully');
-
-    res.status(200).json({ message: 'Assignment answers submitted successfully' });
+    
+    console.log("Assignment answers submitted successfully");
+    res.status(200).json({ message: "Assignment answers submitted successfully" });
   } catch (error) {
-    console.error('Failed to submit assignment answers', { error: error.message });
-    res.status(500).json({ message: 'Failed to submit assignment answers', error: error.message });
+    console.error("Error in submitAssignmentAnswers function:", error);
+    res.status(500).json({ error: "Internal Server Error" });
   }
 };
+
+
+
 
 
 // Function for the chief to submit the group's assignment after all answers are in

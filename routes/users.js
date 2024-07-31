@@ -19,7 +19,7 @@ router.get('/:id', verifyStudent, findUser);
 
 // Admin routes
 router.get('/', verifyStudent, findAllUsers);
-router.get('/students', findAllStudents);
+router.get('/all-students', verifyLecturer, findAllStudents);  // Ensure this route matches the one in your frontend
 router.get('/lecturers', verifyAdmin, findAllLecturers);
 router.put('/:id/updateRole', verifyAdmin, updateUserRole);
 

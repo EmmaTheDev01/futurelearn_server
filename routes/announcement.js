@@ -9,11 +9,11 @@ import {
   deleteAnnouncementById,
   updateApprovalStatus,
 } from '../controllers/announcement.js';
-
+import { verifyLecturer } from '../utils/verifyToken.js';
 const router = express.Router();
 
 // Create a new Announcement
-router.post('/create', createAnnouncement); 
+router.post('/create', verifyLecturer, createAnnouncement); 
 
 // Get all Announcements
 router.get('/', getAllAnnouncements);

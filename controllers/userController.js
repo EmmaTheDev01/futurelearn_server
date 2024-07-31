@@ -103,8 +103,10 @@ export const findAllUsers = async (req, res) => {
 // findAllStudents Controller to fetch only students
 export const findAllStudents = async (req, res) => {
     try {
-        const students = await User.find({ role: 'student' });
+        // Fetch all users with the role 'student'
+        const students = await User.find({ role: 'student' }).exec();
 
+        // Check if no students are found
         if (!students || students.length === 0) {
             console.log('No students found');
             return res.status(404).json({
@@ -114,6 +116,7 @@ export const findAllStudents = async (req, res) => {
             });
         }
 
+        // Log the number of students found
         console.log(`Found ${students.length} students`);
         res.status(200).json({
             success: true,
@@ -121,15 +124,15 @@ export const findAllStudents = async (req, res) => {
             data: students,
         });
     } catch (error) {
+        // Log the error and return a 500 status code
         console.error('Error fetching students:', error);
         res.status(500).json({
             success: false,
             message: "Internal server error",
-            error: error.message // Include the error message in the response for debugging
+            error: error.message
         });
     }
 };
-
 // Find All Lecturers Controller
 export const findAllLecturers = async (req, res) => {
     try {
