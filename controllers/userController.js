@@ -178,6 +178,61 @@ export const updateUserRole = async (req, res) => {
     }
 };
 
+// Search Users Controller
+export const searchUsers = async (req, res) => {
+    const { query } = req.query;
+    console.log(`Received search query: ${query}`); // Log the incoming search query
+    
+    if (!query) {
+        console.log('Search query parameter is missing');
+        return res.status(400).json({
+            success: false,
+            message: 'Search query parameter is required'
+        });
+    }
+
+    try {
+        // Use a regex for case-insensitive search
+        const searchRegex = new RegExp(query, 'i');
+        console.log(`Search regex: ${searchRegex}`); // Log the regex used for search
+        
+        // Find users matching the query in firstname, lastname, username, or email fields
+        const results = await User.find({
+            $or: [
+                { firstname: { $regex: searchRegex } },
+                { lastname: { $regex: searchRegex } },
+                { username: { $regex: searchRegex } },
+                { email: { $regex: searchRegex } }
+            ]
+        });
+
+        console.log(`Number of users found: ${results.length}`); // Log the number of results found
+
+        if (results.length === 0) {
+            console.log('No users found matching the search criteria');
+            return res.status(404).json({
+                success: false,
+                message: 'No users found matching the search criteria',
+                data: []
+            });
+        }
+
+        console.log('Users found matching the search criteria');
+        res.status(200).json({
+            success: true,
+            message: 'Users found matching the search criteria',
+            data: results
+        });
+    } catch (err) {
+        console.error('Error searching users:', err); // Log the error with details
+        res.status(500).json({
+            success: false,
+            message: 'Failed to search users'
+        });
+    }
+};
+
+
 export default {
     updateUser,
     deleteUser,
@@ -185,5 +240,6 @@ export default {
     findAllUsers,
     findAllStudents,
     findAllLecturers,
-    updateUserRole
+    updateUserRole,
+    searchUsers
 };

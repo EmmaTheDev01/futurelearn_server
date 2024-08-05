@@ -6,7 +6,7 @@ import cloudinary from "cloudinary";
 // User registration controller
 export const register = async (req, res) => {
   try {
-    const { firstname, lastname, regNo, username, email, password, phone, photo } = req.body;
+    const { firstname, lastname, regNo, username, email, password, phone,department, photo } = req.body;
 
     let newUser;
 
@@ -54,6 +54,7 @@ export const register = async (req, res) => {
         username,
         email,
         phone,
+        department,
         password: hash,
       });
     }
